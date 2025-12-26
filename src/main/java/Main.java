@@ -33,14 +33,9 @@ public class Main {
             }
 
             else {
-                if (executeCommand(command) == true) {
-                    executeCommand(command);
-                }
-
-                else {
+                if (executeCommand(command) != true) {
                     System.out.println(input + ": command not found");
                 }
-
 
             }
 
