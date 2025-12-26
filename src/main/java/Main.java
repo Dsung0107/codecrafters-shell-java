@@ -67,7 +67,7 @@ public class Main {
         String[] paths = systemPATH != null ? systemPATH.split(File.pathSeparator) : new String[0];
         for (String path : paths) {
             File dir = new File(path);
-            File commandFile = new File(dir, commands[0];
+            File commandFile = new File(dir, commands[0]);
             if (commandFile.exists() && commandFile.canExecute()) {
                 for (String command : commands) {
                     ProcessBuilder pb = new ProcessBuilder(command);
