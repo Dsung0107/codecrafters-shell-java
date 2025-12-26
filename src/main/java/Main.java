@@ -1,5 +1,7 @@
+import java.io.IOException;
 import java.util.*;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -19,17 +21,20 @@ public class Main {
             if (input.equals("exit")) {
                 break;
             }
+
             String trimmed = input.trim();
             String[] command = trimmed.split(" ");
+
             if (command[0].equals("echo")) {
                 System.out.println(input.substring(5));
             }
             else if (command[0].equals("type")) {
-                type(command);
-
+                getType(command);
             }
 
             else {
+                executeCommand(command);
+
                 System.out.println(input + ": command not found");
             }
 
@@ -39,7 +44,7 @@ public class Main {
 
     }
 
-    int type(String[] commands) {
+    void getType(String[] commands) {
         if (availableCommands.contains(commands[1])) {
             System.out.println(commands[1] + " is a shell builtin");
         }
@@ -51,12 +56,26 @@ public class Main {
                 File commandFile = new File(dir, commands[1]);
                 if (commandFile.exists() && commandFile.canExecute()) {
                     System.out.printf("%s is %s %n", commands[1], commandFile.getAbsolutePath());
-                    return 0;
                 }
             }
             System.out.println(commands[1] + ": not found");
 
         }
-        return 0;
+    }
+    void executeCommand(String[] commands) throws IOException {
+        String systemPATH = System.getenv("PATH");
+        String[] paths = systemPATH != null ? systemPATH.split(File.pathSeparator) : new String[0];
+        for (String path : paths) {
+            File dir = new File(path);
+            File commandFile = new File(dir, commands[0];
+            if (commandFile.exists() && commandFile.canExecute()) {
+                for (String command : commands) {
+                    ProcessBuilder pb = new ProcessBuilder(command);
+                    pb.inheritIO();
+                    pb.start();
+                }
+
+            }
+        }
     }
 }
