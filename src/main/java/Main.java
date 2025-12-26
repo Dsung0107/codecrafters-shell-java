@@ -31,10 +31,12 @@ public class Main {
             else if (command[0].equals("type")) {
                 getType(command);
             }
+            else if (findPATH(command) == true) {
+                executeCommand(command);
+            }
             else {
-                if (executeCommand(command) != true) {
-                    System.out.println(input + ": command not found");
-                }
+
+                System.out.println(input + ": command not found");
 
             }
 
@@ -64,7 +66,23 @@ public class Main {
         }
         return 0;
     }
-    boolean executeCommand(String[] commands) throws IOException {
+    boolean findPATH(String[] commands) {
+        String systemPATH = System.getenv("PATH");
+        String[] paths = systemPATH != null ? systemPATH.split(File.pathSeparator) : new String[0];
+        for (String path : paths) {
+            File dir = new File(path);
+            File commandFile = new File(dir, commands[0]);
+            if (commandFile.exists() && commandFile.canExecute()) {
+                return true;
+            }
+            else {
+                return false;
+            }
+
+        }
+        return false;
+    }
+    int executeCommand(String[] commands) throws IOException {
         String systemPATH = System.getenv("PATH");
         String[] paths = systemPATH != null ? systemPATH.split(File.pathSeparator) : new String[0];
         for (String path : paths) {
@@ -74,14 +92,14 @@ public class Main {
                 ProcessBuilder pb = new ProcessBuilder(commands);
                 pb.inheritIO();
                 pb.start();
-                return true;
+                return 0;
 
             }
             else {
-                return false;
+                return -1;
             }
 
         }
-        return false;
+        return -1;
     }
 }
