@@ -9,9 +9,13 @@ public class Main {
 
             System.out.print("$ ");
             String input = in.next();
-            if (input != "") {
+            if (!input.equals("exit")) {
                 System.out.println(input + ": command not found");
             }
+            else if (input.equals("exit")) {
+                break;
+            }
+
 
 
         }
