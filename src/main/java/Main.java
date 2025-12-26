@@ -8,12 +8,16 @@ public class Main {
         while (true) {
 
             System.out.print("$ ");
-            String input = in.next();
-            if (!input.equals("exit")) {
-                System.out.println(input + ": command not found");
+            String input = in.nextLine();
+
+            if ((input.length() > 5) && (input.substring(0, 5).equals("echo "))) {
+                System.out.println(input.substring(5));
             }
             else if (input.equals("exit")) {
                 break;
+            }
+            else {
+                System.out.println(input + ": command not found");
             }
 
 
