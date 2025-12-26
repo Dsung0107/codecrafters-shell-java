@@ -31,7 +31,6 @@ public class Main {
             else if (command[0].equals("type")) {
                 getType(command);
             }
-
             else {
                 if (executeCommand(command) != true) {
                     System.out.println(input + ": command not found");
@@ -45,7 +44,7 @@ public class Main {
 
     }
 
-    void getType(String[] commands) {
+    int getType(String[] commands) {
         if (availableCommands.contains(commands[1])) {
             System.out.println(commands[1] + " is a shell builtin");
         }
@@ -57,11 +56,13 @@ public class Main {
                 File commandFile = new File(dir, commands[1]);
                 if (commandFile.exists() && commandFile.canExecute()) {
                     System.out.printf("%s is %s %n", commands[1], commandFile.getAbsolutePath());
+                    return 0;
                 }
             }
             System.out.println(commands[1] + ": not found");
-
+            return 0;
         }
+        return 0;
     }
     boolean executeCommand(String[] commands) throws IOException {
         String systemPATH = System.getenv("PATH");
