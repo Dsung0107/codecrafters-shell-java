@@ -33,7 +33,13 @@ public class Main {
             }
 
             else {
-                executeCommand(command);
+                if (executeCommand(command) == true) {
+                    executeCommand(command);
+                }
+
+                else {
+                    System.out.println(input + ": command not found");
+                }
 
 
             }
@@ -62,7 +68,7 @@ public class Main {
 
         }
     }
-    void executeCommand(String[] commands) throws IOException {
+    boolean executeCommand(String[] commands) throws IOException {
         String systemPATH = System.getenv("PATH");
         String[] paths = systemPATH != null ? systemPATH.split(File.pathSeparator) : new String[0];
         for (String path : paths) {
@@ -72,12 +78,14 @@ public class Main {
                 ProcessBuilder pb = new ProcessBuilder(commands);
                 pb.inheritIO();
                 pb.start();
-
+                return true;
 
             }
             else {
-                System.out.println(commands + ": command not found");
+                return false;
             }
+
         }
+        return false;
     }
 }
