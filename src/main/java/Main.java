@@ -35,7 +35,7 @@ public class Main {
             else {
                 executeCommand(command);
 
-                System.out.println(input + ": command not found");
+
             }
 
 
@@ -74,6 +74,9 @@ public class Main {
                 pb.start();
 
 
+            }
+            else {
+                System.out.println(commands + ": command not found");
             }
         }
     }
