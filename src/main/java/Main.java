@@ -69,11 +69,10 @@ public class Main {
             File dir = new File(path);
             File commandFile = new File(dir, commands[0]);
             if (commandFile.exists() && commandFile.canExecute()) {
-                for (String command : commands) {
-                    ProcessBuilder pb = new ProcessBuilder(command);
-                    pb.inheritIO();
-                    pb.start();
-                }
+                ProcessBuilder pb = new ProcessBuilder(commands);
+                pb.inheritIO();
+                pb.start();
+
 
             }
         }
