@@ -18,6 +18,7 @@ public class Main {
         while (true) {
             System.out.print("$ ");
             String input = in.nextLine();
+            System.out.println();
 
             if (input.equals("exit")) {
                 break;
