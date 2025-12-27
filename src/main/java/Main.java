@@ -7,11 +7,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class Main {
-    HashSet<String> availableCommands = new HashSet<>();
+    public static HashSet<String> availableCommands = new HashSet<>();
 
 
 
-    void main(String[] args) throws Exception {
+    public static void main(String[] args) throws Exception {
         availableCommands.addAll(List.of(new String[]{"echo", "type", "exit", "pwd"}));
         Scanner in = new Scanner(System.in);
 
@@ -37,17 +37,7 @@ public class Main {
                 System.out.println(dirOG);
             }
             else if (findPATH(command) == true) {
-                String systemPATH = System.getenv("PATH");
-                String[] paths = systemPATH != null ? systemPATH.split(File.pathSeparator) : new String[0];
-                for (String path : paths) {
-                    File dir = new File(path);
-                    File commandFile = new File(dir, command[0]);
-                    if (commandFile.exists() && commandFile.canExecute()) {
-                        ProcessBuilder pb = new ProcessBuilder(command);
-                        pb.inheritIO();
-                        pb.start();
-                    }
-                }
+                executeCommand(command);
             }
             else {
 
@@ -61,7 +51,7 @@ public class Main {
 
     }
 
-    int getType(String[] commands) {
+    public static int getType(String[] commands) {
         if (availableCommands.contains(commands[1])) {
             System.out.println(commands[1] + " is a shell builtin");
         }
@@ -81,7 +71,7 @@ public class Main {
         }
         return 0;
     }
-    boolean findPATH(String[] commands) {
+    public static boolean findPATH(String[] commands) {
         String systemPATH = System.getenv("PATH");
         String[] paths = systemPATH != null ? systemPATH.split(File.pathSeparator) : new String[0];
         for (String path : paths) {
@@ -97,7 +87,7 @@ public class Main {
         }
         return false;
     }
-    /*int executeCommand(String[] commands) throws IOException {
+    public static int executeCommand(String[] commands) throws IOException, InterruptedException {
         String systemPATH = System.getenv("PATH");
         String[] paths = systemPATH != null ? systemPATH.split(File.pathSeparator) : new String[0];
         for (String path : paths) {
@@ -106,7 +96,9 @@ public class Main {
             if (commandFile.exists() && commandFile.canExecute()) {
                 ProcessBuilder pb = new ProcessBuilder(commands);
                 pb.inheritIO();
-                pb.start();
+                Process proc = pb.start();
+                proc.waitFor();
+
                 return 0;
 
             }
@@ -117,6 +109,4 @@ public class Main {
         }
         return -1;
     }
-
-     */
 }
