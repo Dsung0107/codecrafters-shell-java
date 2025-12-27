@@ -8,13 +8,13 @@ import java.nio.file.Path;
 
 public class Main {
     public static HashSet<String> availableCommands = new HashSet<>();
-
+    public static Path dirOG = Paths.get("").toAbsolutePath();
 
 
     public static void main(String[] args) throws Exception {
         availableCommands.addAll(List.of(new String[]{"echo", "type", "exit", "pwd", "cd"}));
         Scanner in = new Scanner(System.in);
-        Path dirOG = Paths.get("").toAbsolutePath();
+
         while (true) {
             System.out.print("$ ");
             String input = in.nextLine();
@@ -37,15 +37,9 @@ public class Main {
                 System.out.println(dirOG);
             }
             else if ((command[0].equals("cd")) && (command.length > 1)) {
-                Path target = Path.of(command[1]);
-                if (!Files.isDirectory(target)) {
-                    System.out.println("cd: " + command[1] + ": No such file or directory");
-                }
-                if (!target.isAbsolute()) {
-                    target = dirOG.resolve(target);
+                changeDirectory(command);
 
-                }
-                dirOG = target.normalize();
+
 
             }
             else if (findPATH(command) == true) {
@@ -121,5 +115,16 @@ public class Main {
         }
         return -1;
     }
-    
+    public static void changeDirectory(String[] command) {
+        Path target = dirOG.resolve(command[1]).toAbsolutePath().normalize();
+
+
+        if (Files.isDirectory(target)) {
+            dirOG = target;
+        }
+        else {
+            System.out.println("cd: " + command[1] + ": No such file or directory");
+        }
+    }
+
 }
