@@ -14,7 +14,7 @@ public class Main {
     public static void main(String[] args) throws Exception {
         availableCommands.addAll(List.of(new String[]{"echo", "type", "exit", "pwd", "cd"}));
         Scanner in = new Scanner(System.in);
-
+        Path dirOG = Paths.get("").toAbsolutePath();
         while (true) {
             System.out.print("$ ");
             String input = in.nextLine();
@@ -33,11 +33,19 @@ public class Main {
                 getType(command);
             }
             else if (command[0].equals("pwd")) {
-                Path dirOG = Paths.get("").toAbsolutePath();
+
                 System.out.println(dirOG);
             }
             else if ((command[0].equals("cd")) && (command.length > 1)) {
-                changeDirectory(command);
+                Path target = Path.of(command[1]);
+                if (!Files.isDirectory(target)) {
+                    System.out.println("cd: " + command[1] + ": No such file or directory");
+                }
+                if (!target.isAbsolute()) {
+                    target = dirOG.resolve(target);
+
+                }
+                dirOG = target.normalize();
 
             }
             else if (findPATH(command) == true) {
@@ -113,19 +121,5 @@ public class Main {
         }
         return -1;
     }
-
-    public static void changeDirectory(String[] path) throws IOException {
-        Path target = Path.of(path[1]);
-        Path dirOG = Paths.get("").toAbsolutePath();
-
-        if (!Files.isDirectory(target)) {
-            System.out.println("cd: " + path[1] + ": No such file or directory");
-        }
-        if (!target.isAbsolute()) {
-            target = dirOG.resolve(target);
-
-        }
-        dirOG = target.normalize();
-
-    }
+    
 }
