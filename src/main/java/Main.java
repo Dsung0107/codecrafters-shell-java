@@ -120,6 +120,7 @@ public class Main {
 
         if (command[1].equals("~")) {
             command[1] = System.getenv("HOME");
+            target = dirOG.resolve(command[1]).toAbsolutePath().normalize();
         }
         if (Files.isDirectory(target)) {
             dirOG = target;
