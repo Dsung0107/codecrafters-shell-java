@@ -118,7 +118,9 @@ public class Main {
     public static void changeDirectory(String[] command) {
         Path target = dirOG.resolve(command[1]).toAbsolutePath().normalize();
 
-
+        if (command[1].equals("~")) {
+            command[1] = System.getenv("HOME");
+        }
         if (Files.isDirectory(target)) {
             dirOG = target;
         }
