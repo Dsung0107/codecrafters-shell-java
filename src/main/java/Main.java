@@ -12,7 +12,7 @@ public class Main {
 
 
     public static void main(String[] args) throws Exception {
-        availableCommands.addAll(List.of(new String[]{"echo", "type", "exit", "pwd"}));
+        availableCommands.addAll(List.of(new String[]{"echo", "type", "exit", "pwd", "cd"}));
         Scanner in = new Scanner(System.in);
 
         while (true) {
@@ -26,15 +26,19 @@ public class Main {
             String trimmed = input.trim();
             String[] command = trimmed.split(" ");
 
-            if (command[0].equals("echo")) {
+            if ((command[0].equals("echo")) && (command.length > 1)) {
                 System.out.println(input.substring(5));
             }
-            else if (command[0].equals("type")) {
+            else if ((command[0].equals("type")) && (command.length > 1)) {
                 getType(command);
             }
             else if (command[0].equals("pwd")) {
                 Path dirOG = Paths.get("").toAbsolutePath();
                 System.out.println(dirOG);
+            }
+            else if ((command[0].equals("cd")) && (command.length > 1)) {
+                changeDirectory(command);
+
             }
             else if (findPATH(command) == true) {
                 executeCommand(command);
@@ -108,5 +112,16 @@ public class Main {
 
         }
         return -1;
+    }
+
+    public static void changeDirectory(String[] path) throws IOException {
+        File dir = new File(path[1]);
+        if (dir.exists()) {
+            System.setProperty("", path[1]);
+        }
+        else {
+            System.out.println(path[0] + ": " + path[1] + ": No such file or directory");
+        }
+
     }
 }
