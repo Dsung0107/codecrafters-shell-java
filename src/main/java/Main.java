@@ -1,4 +1,5 @@
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.*;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -11,7 +12,7 @@ public class Main {
 
 
     void main(String[] args) throws Exception {
-        availableCommands.addAll(List.of(new String[]{"echo", "type", "exit"}));
+        availableCommands.addAll(List.of(new String[]{"echo", "type", "exit", "pwd"}));
         Scanner in = new Scanner(System.in);
 
         while (true) {
@@ -30,6 +31,10 @@ public class Main {
             }
             else if (command[0].equals("type")) {
                 getType(command);
+            }
+            else if (command[0].equals("pwd")) {
+                Path dirOG = Paths.get("").toAbsolutePath();
+                System.out.println(dirOG);
             }
             else if (findPATH(command) == true) {
                 executeCommand(command);
