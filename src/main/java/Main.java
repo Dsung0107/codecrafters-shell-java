@@ -37,7 +37,17 @@ public class Main {
                 System.out.println(dirOG);
             }
             else if (findPATH(command) == true) {
-                executeCommand(command);
+                String systemPATH = System.getenv("PATH");
+                String[] paths = systemPATH != null ? systemPATH.split(File.pathSeparator) : new String[0];
+                for (String path : paths) {
+                    File dir = new File(path);
+                    File commandFile = new File(dir, command[0]);
+                    if (commandFile.exists() && commandFile.canExecute()) {
+                        ProcessBuilder pb = new ProcessBuilder(command);
+                        pb.inheritIO();
+                        pb.start();
+                    }
+                }
             }
             else {
 
@@ -87,7 +97,7 @@ public class Main {
         }
         return false;
     }
-    int executeCommand(String[] commands) throws IOException {
+    /*int executeCommand(String[] commands) throws IOException {
         String systemPATH = System.getenv("PATH");
         String[] paths = systemPATH != null ? systemPATH.split(File.pathSeparator) : new String[0];
         for (String path : paths) {
@@ -107,4 +117,6 @@ public class Main {
         }
         return -1;
     }
+
+     */
 }
