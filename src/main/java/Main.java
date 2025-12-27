@@ -115,13 +115,17 @@ public class Main {
     }
 
     public static void changeDirectory(String[] path) throws IOException {
-        File dir = new File(path[1]);
-        if (dir.exists()) {
-            System.setProperty("", path[1]);
+        Path target = Path.of(path[1]);
+        Path dirOG = Paths.get("").toAbsolutePath();
+
+        if (!Files.isDirectory(target)) {
+            System.out.println("cd: " + path[1] + ": No such file or directory");
         }
-        else {
-            System.out.println(path[0] + ": " + path[1] + ": No such file or directory");
+        if (!target.isAbsolute()) {
+            target = dirOG.resolve(target);
+
         }
+        dirOG = target.normalize();
 
     }
 }
