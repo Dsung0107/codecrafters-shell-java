@@ -41,7 +41,7 @@ public class Main {
                     inSingle = !inSingle;
                     continue;
                 }
-                if (c == '\\' && !inSingle && !inDouble && !backslashed) {
+                if (c == '\\' && !inSingle && !backslashed) {
                     backslashed = true;
                     continue;
                 }
