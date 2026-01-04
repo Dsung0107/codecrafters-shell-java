@@ -27,26 +27,33 @@ public class Main {
             StringBuilder echoReturn = new StringBuilder();
             boolean inSingle = false;
             boolean inDouble = false;
+            boolean backslashed = false;
 
             for (int i = 0; i < input.length(); i++) {
                 char c = input.charAt(i);
-                if (c == '"' && !inSingle) {
+
+                if (c == '"' && !inSingle && !backslashed) {
                     inDouble = !inDouble;
                     continue;
                 }
-                if (c == '\'' && !inDouble) {
+                if (c == '\'' && !inDouble && !backslashed) {
                     inSingle = !inSingle;
                     continue;
                 }
-                if (c == ' ' && !inSingle && !inDouble) {
+                if (c == ' ' && !inSingle && !inDouble && !backslashed) {
                     if (echoReturn.length() > 0) {
                         response.add(echoReturn.toString());
                         echoReturn.setLength(0);
                     }
                 }
+                if (c == '\\' && !inSingle && !inDouble && !backslashed) {
+                    backslashed = true;
+                }
                 else {
                     echoReturn.append(c);
+                    backslashed = false;
                 }
+
             }
             if (echoReturn.length() > 0) {
                 response.add(echoReturn.toString());
