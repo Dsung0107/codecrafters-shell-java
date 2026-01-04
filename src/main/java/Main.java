@@ -23,13 +23,10 @@ public class Main {
                 break;
             }
 
-            String trimmed = input.trim();
-            String[] command = trimmed.split("\s+");
             ArrayList<String> response = new ArrayList<>();
             StringBuilder echoReturn = new StringBuilder();
             boolean inSingle = false;
             boolean inDouble = false;
-            input = input.substring(5);
 
             for (int i = 0; i < input.length(); i++) {
                 char c = input.charAt(i);
@@ -54,11 +51,12 @@ public class Main {
             if (echoReturn.length() > 0) {
                 response.add(echoReturn.toString());
             }
+            String[] command = response.toArray(new String[0]);
 
             if ((command[0].equals("echo")) && (command.length > 1)) {
 
-                for (int i = 0; i < response.size(); i++) {
-                    System.out.print(response.get(i) + " ");
+                for (int i = 1; i < command.length; i++) {
+                    System.out.print(command[i] + " ");
                 }
                 System.out.printf("\n");
 
