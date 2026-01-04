@@ -42,8 +42,15 @@ public class Main {
                     continue;
                 }
                 if (c == '\\' && !inSingle && !backslashed) {
-                    backslashed = true;
-                    continue;
+                    if (inDouble && input.charAt(i+1) != '\\' && input.charAt(i+1) != '"' ) {
+                        backslashed = false;
+                    }
+                    else {
+                        backslashed = true;
+                        continue;
+                    }
+
+
                 }
                 if (c == ' ' && !inSingle && !inDouble && !backslashed) {
                     if (echoReturn.length() > 0) {
