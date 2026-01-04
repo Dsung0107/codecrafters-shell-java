@@ -32,6 +32,9 @@ public class Main {
             for (int i = 0; i < input.length(); i++) {
                 char c = input.charAt(i);
 
+                if (c == '\\' && !inSingle && !inDouble && !backslashed) {
+                    backslashed = true;
+                }
                 if (c == '"' && !inSingle && !backslashed) {
                     inDouble = !inDouble;
                     continue;
@@ -45,9 +48,6 @@ public class Main {
                         response.add(echoReturn.toString());
                         echoReturn.setLength(0);
                     }
-                }
-                if (c == '\\' && !inSingle && !inDouble && !backslashed) {
-                    backslashed = true;
                 }
                 else {
                     echoReturn.append(c);
