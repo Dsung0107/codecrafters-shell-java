@@ -24,10 +24,43 @@ public class Main {
             }
 
             String trimmed = input.trim();
-            String[] command = trimmed.split(" ");
+            String[] command = trimmed.split("\s+");
 
             if ((command[0].equals("echo")) && (command.length > 1)) {
-                System.out.println(input.substring(5));
+                ArrayList<String> response = new ArrayList<>();
+                StringBuilder echoReturn = new StringBuilder();
+                boolean inSingle = false;
+                boolean inDouble = false;
+                input = input.substring(5);
+
+                for (int i = 0; i < input.length(); i++) {
+                    char c = input.charAt(i);
+                    if (c == '"' && !inSingle) {
+                        inDouble = !inDouble;
+                        continue;
+                    }
+                    if (c == '\'' && !inDouble) {
+                        inSingle = !inSingle;
+                        continue;
+                    }
+                    if (c == ' ' && !inSingle && !inDouble) {
+                        if (echoReturn.length() > 0) {
+                            response.add(echoReturn.toString());
+                            echoReturn.setLength(0);
+                        }
+                    }
+                    else {
+                        echoReturn.append(c);
+                    }
+                }
+                if (echoReturn.length() > 0) {
+                    response.add(echoReturn.toString());
+                }
+                for (int i = 0; i < response.size(); i++) {
+                    System.out.print(response.get(i) + " ");
+                }
+                System.out.printf("\n");
+
             }
             else if ((command[0].equals("type")) && (command.length > 1)) {
                 getType(command);
