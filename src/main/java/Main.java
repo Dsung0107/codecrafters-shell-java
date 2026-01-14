@@ -69,8 +69,10 @@ public class Main {
                 response.add(echoReturn.toString());
             }
             String[] command = response.toArray(new String[0]);
+            if (input.contains(">")) {
 
-            if ((command[0].equals("echo")) && (command.length > 1)) {
+            }
+            else if ((command[0].equals("echo")) && (command.length > 1)) {
 
                 for (int i = 1; i < command.length; i++) {
                     System.out.print(command[i] + " ");
@@ -105,7 +107,7 @@ public class Main {
         }
 
     }
-
+    public
     public static int getType(String[] commands) {
         if (availableCommands.contains(commands[1])) {
             System.out.println(commands[1] + " is a shell builtin");
