@@ -1,4 +1,5 @@
 import java.io.IOException;
+import java.io.PrintStream;
 import java.nio.file.Paths;
 import java.util.*;
 import java.io.File;
@@ -14,6 +15,7 @@ public class Main {
     public static void main(String[] args) throws Exception {
         availableCommands.addAll(List.of(new String[]{"echo", "type", "exit", "pwd", "cd"}));
         Scanner in = new Scanner(System.in);
+        PrintStream console = System.out;
 
         while (true) {
             System.out.print("$ ");
@@ -69,8 +71,9 @@ public class Main {
                 response.add(echoReturn.toString());
             }
             String[] command = response.toArray(new String[0]);
+            command = redirectOutput(command);
             if (input.contains(">")) {
-
+                System.setOut(console);
             }
             else if ((command[0].equals("echo")) && (command.length > 1)) {
 
@@ -107,7 +110,21 @@ public class Main {
         }
 
     }
-    public
+    public static String[] redirectOutput(String[] arguments) throws FileNotFoundException {
+        if (arguments.length > 2) {
+            if (arguments[arguments.length-2].equals(">") ||
+                    arguments[arguments.length-2].equals("1>")) {
+                PrintStream out = new PrintStream(arguments[arguments.length-1]);
+                System.setOut(out);
+
+                arguments = Arrays.copyOfRange(arguments, 0, arguments.length - 2);
+
+
+            }
+
+        }
+        return arguments;
+    }
     public static int getType(String[] commands) {
         if (availableCommands.contains(commands[1])) {
             System.out.println(commands[1] + " is a shell builtin");
