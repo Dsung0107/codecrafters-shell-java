@@ -72,43 +72,46 @@ public class Main {
             }
             String[] command = response.toArray(new String[0]);
             command = redirectOutput(command);
-            if (input.contains(">")) {
-                System.setOut(console);
-            }
-            else if ((command[0].equals("echo")) && (command.length > 1)) {
 
-                for (int i = 1; i < command.length; i++) {
-                    System.out.print(command[i] + " ");
-                }
-                System.out.printf("\n");
+            executeCMD(command, input);
+            System.setOut(console);
 
-            }
-            else if ((command[0].equals("type")) && (command.length > 1)) {
-                getType(command);
-            }
-            else if (command[0].equals("pwd")) {
-
-                System.out.println(dirOG);
-            }
-            else if ((command[0].equals("cd")) && (command.length > 1)) {
-                changeDirectory(command);
-
-
-
-            }
-            else if (findPATH(command) == true) {
-                executeCommand(command);
-            }
-            else {
-
-                System.out.println(input + ": command not found");
-
-            }
 
 
 
         }
 
+    }
+    public static void executeCMD(String[] command, String input) throws IOException, InterruptedException {
+        if ((command[0].equals("echo")) && (command.length > 1)) {
+
+            for (int i = 1; i < command.length; i++) {
+                System.out.print(command[i] + " ");
+            }
+            System.out.printf("\n");
+
+        }
+        else if ((command[0].equals("type")) && (command.length > 1)) {
+            getType(command);
+        }
+        else if (command[0].equals("pwd")) {
+
+            System.out.println(dirOG);
+        }
+        else if ((command[0].equals("cd")) && (command.length > 1)) {
+            changeDirectory(command);
+
+
+
+        }
+        else if (findPATH(command) == true) {
+            executeCommand(command);
+        }
+        else {
+
+            System.out.println(input + ": command not found");
+
+        }
     }
     public static String[] redirectOutput(String[] arguments) throws FileNotFoundException {
         if (arguments.length > 2) {
