@@ -10,7 +10,7 @@ import java.nio.file.Path;
 public class Main {
     public static HashSet<String> availableCommands = new HashSet<>();
     public static Path dirOG = Paths.get("").toAbsolutePath();
-
+    public static String redirectTarget = null;
 
     public static void main(String[] args) throws Exception {
         availableCommands.addAll(List.of(new String[]{"echo", "type", "exit", "pwd", "cd"}));
@@ -73,9 +73,19 @@ public class Main {
             String[] command = response.toArray(new String[0]);
             command = redirectOutput(command);
 
+            PrintStream fileOut = null;
+            if (redirectTarget != null) {
+                fileOut = new PrintStream(new File(redirectTarget));
+                System.setOut(fileOut);
+            }
+
             executeCMD(command, input);
             System.setOut(console);
-
+            if (fileOut != null) {
+                fileOut.close();
+                
+            }
+            redirectTarget = null;
 
 
 
@@ -117,9 +127,8 @@ public class Main {
         if (arguments.length > 2) {
             if (arguments[arguments.length-2].equals(">") ||
                     arguments[arguments.length-2].equals("1>")) {
-                PrintStream out = new PrintStream(arguments[arguments.length-1]);
-                System.setOut(out);
-
+                
+                redirectTarget = arguments[arguments.length-1];
                 arguments = Arrays.copyOfRange(arguments, 0, arguments.length - 2);
 
 
@@ -157,9 +166,6 @@ public class Main {
             if (commandFile.exists() && commandFile.canExecute()) {
                 return true;
             }
-            else {
-                return false;
-            }
 
         }
         return false;
@@ -172,15 +178,19 @@ public class Main {
             File commandFile = new File(dir, commands[0]);
             if (commandFile.exists() && commandFile.canExecute()) {
                 ProcessBuilder pb = new ProcessBuilder(commands);
-                pb.inheritIO();
+                if (redirectTarget != null) {
+                    pb.redirectOutput(new File(redirectTarget));
+                    pb.redirectError(ProcessBuilder.Redirect.INHERIT);
+                    pb.redirectInput(ProcessBuilder.Redirect.INHERIT);
+                } else {
+                    pb.inheritIO();
+                }
+                
                 Process proc = pb.start();
                 proc.waitFor();
 
                 return 0;
 
-            }
-            else {
-                return -1;
             }
 
         }
