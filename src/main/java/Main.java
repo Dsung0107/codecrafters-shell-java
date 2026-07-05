@@ -42,6 +42,7 @@ public class Main {
             try {
                 String input = reader.readLine("$ ");
                 if (input.equals("exit")) {
+                    historyList.add(input);
                     break;    
                 }
                 ArrayList<String> response = new ArrayList<>();
