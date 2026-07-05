@@ -187,12 +187,22 @@ public class Main {
             if (commandFile.exists() && commandFile.canExecute()) {
                 ProcessBuilder pb = new ProcessBuilder(commands);
                 if (redirectTarget != null) {
-                    pb.redirectOutput(new File(redirectTarget));
+                    if (redirectAppend) {
+                        pb.redirectOutput(ProcessBuilder.Redirect.appendTo(new File(redirectTarget)));
+                    }
+                    else {
+                        pb.redirectOutput(new File(redirectTarget));
+                    }
                     pb.redirectError(ProcessBuilder.Redirect.INHERIT);
                     pb.redirectInput(ProcessBuilder.Redirect.INHERIT);
                 }
                 else if (redirectError != null) {
-                    pb.redirectError(new File(redirectError));
+                    if (redirectAppend) {
+                        pb.redirectError(ProcessBuilder.Redirect.appendTo(new File(redirectError)));
+                    }
+                    else {
+                        pb.redirectError(new File(redirectError));
+                    }
                     pb.redirectOutput(ProcessBuilder.Redirect.INHERIT);
                     pb.redirectInput(ProcessBuilder.Redirect.INHERIT);
                 } 
