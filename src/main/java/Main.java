@@ -133,30 +133,7 @@ public class Main {
             changeDirectory(command);
         }
         else if (command[0].equals("history")) {
-            if (command.length > 1 && !command[1].equals("-r")) {
-                try {
-                    int n = Integer.parseInt(command[1]);
-                    getHistory(n);
-                }
-                catch (NumberFormatException e) {
-                    System.err.println("history: " + command[1] + ": numeric argument required");
-                }
-            }
-            else if (command.length > 1 && command[1].equals("-r")) {
-                try {
-                    List<String> lines = Files.readAllLines(Paths.get(command[2]));
-                    for (String line : lines) {
-                        if (!line.trim().isBlank()) {
-                            historyList.add(line);
-                        }
-                    }
-                } catch (IOException e) {
-                    System.err.println("history: error reading history file");
-                }
-            }
-            else {
-                getHistory(historyList.size());
-            }
+            getHistory(command);
         }
         else if (findPATH(command) == true) {
             executeCommand(command);
@@ -289,11 +266,44 @@ public class Main {
         }
     }
 
-    public static void getHistory(int n) {
-        int start = Math.max(0, historyList.size() - n);
-        for (int i = start; i < historyList.size(); i++) {
-            System.out.printf(" %5d  %s%n", i + 1, historyList.get(i));
+    public static void getHistory(String[] command) {
+        if (command.length == 1) {
+            for (int i = 0; i < historyList.size(); i++) {
+                System.out.printf(" %5d  %s%n", i + 1, historyList.get(i));
+            }
         }
+        else if (command.length > 1 && command[1].equals("-r")) {
+            try {
+                List<String> lines = Files.readAllLines(Paths.get(command[2]));
+                for (String line : lines) {
+                    if (!line.trim().isBlank()) {
+                        historyList.add(line);
+                    }
+                }
+            } catch (IOException e) {
+                System.err.println("history: error reading history file");
+            }
+        }
+        else if (command.length > 1 && command[1].equals("-w")) {
+            try {
+                Files.write(Paths.get(command[2]), historyList);
+            } catch (IOException e) {
+                System.err.println("history: error writing history file");
+            }
+        }
+        else {
+             try {
+                int n = Integer.parseInt(command[1]);
+                int start = Math.max(0, historyList.size() - n);
+                for (int i = start; i < historyList.size(); i++) {
+                    System.out.printf(" %5d  %s%n", i + 1, historyList.get(i));
+                }
+            }
+            catch (NumberFormatException e) {
+                System.err.println("history: " + command[1] + ": numeric argument required");
+            }
+        }
+        
     }
 
     

@@ -1,2 +1,13 @@
+history -r history.txt
 echo hello
 echo world
+history
+history -w history.txt
+history -r history.txt
+history -r history.txt
+echo hello
+echo world
+history
+history -w history.txt
+history
+history -w history.txt
