@@ -161,7 +161,6 @@ public class Main {
             if (commandFile.exists() && commandFile.canExecute()) {
                 return true;
             }
-
         }
         return false;
     }
