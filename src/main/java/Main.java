@@ -18,6 +18,7 @@ public class Main {
     public static String redirectError = null;
     public static boolean redirectAppend = false;
     public static ArrayList<String> historyList = new ArrayList<>();
+    public static int countSinceLastWrite = 0;
     
     public static void main(String[] args) throws Exception {
         Terminal terminal = TerminalBuilder.builder().system(true).build();
@@ -116,6 +117,7 @@ public class Main {
         if (command.length == 0) {
             return;
         }
+        countSinceLastWrite++;
         historyList.add(input);
         if ((command[0].equals("echo")) && (command.length > 1)) {
             for (int i = 1; i < command.length; i++) {
@@ -287,6 +289,7 @@ public class Main {
         else if (command.length > 1 && command[1].equals("-w")) {
             try {
                 Files.write(Paths.get(command[2]), historyList);
+                countSinceLastWrite = 0;
             } catch (IOException e) {
                 System.err.println("history: error writing history file");
             }
@@ -295,10 +298,12 @@ public class Main {
             try {
                 File file = new File(command[2]);
                 FileOutputStream fos = new FileOutputStream(file, true);
-                for (String line : historyList) {
-                    fos.write((line + System.lineSeparator()).getBytes());
+                int start = historyList.size() - countSinceLastWrite;
+                for (int i = start; i < historyList.size(); i++) {
+                    fos.write((historyList.get(i) + System.lineSeparator()).getBytes());
                 }
                 fos.close();
+                countSinceLastWrite = 0;
             } catch (IOException e) {
                 System.err.println("history: error writing history file");
             }
