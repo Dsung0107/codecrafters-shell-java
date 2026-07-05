@@ -146,7 +146,9 @@ public class Main {
                 try {
                     List<String> lines = Files.readAllLines(Paths.get(command[2]));
                     for (String line : lines) {
-                        historyList.add(line);
+                        if (!line.trim().isBlank()) {
+                            historyList.add(line);
+                        }
                     }
                 } catch (IOException e) {
                     System.err.println("history: error reading history file");
