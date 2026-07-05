@@ -23,6 +23,7 @@ public class Main {
             System.out.print("$ ");
             String input = in.nextLine();
             if (input.equals("exit")) {
+                in.close();
                 break;
             }
             ArrayList<String> response = new ArrayList<>();
