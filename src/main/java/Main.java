@@ -94,7 +94,7 @@ public class Main {
             return 0;
         }
         else if ((command[0].equals("type")) && (command.length > 1)) {
-            returngetType(command);
+            return getType(command);
             
         }
         else if (command[0].equals("pwd")) {
