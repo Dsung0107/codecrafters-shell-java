@@ -25,6 +25,7 @@ public class Main {
         LineReader reader = LineReaderBuilder.builder()
                 .terminal(terminal)
                 .history(history)
+                .option(LineReader.Option.DISABLE_EVENT_EXPANSION, true)
                 .build();
 
         availableCommands.addAll(List.of(new String[]{"echo", "type", "exit", "pwd", "cd", "history"}));
