@@ -291,6 +291,18 @@ public class Main {
                 System.err.println("history: error writing history file");
             }
         }
+        else if (command.length > 1 && command[1].equals("-a")) {
+            try {
+                File file = new File(command[2]);
+                FileOutputStream fos = new FileOutputStream(file, true);
+                for (String line : historyList) {
+                    fos.write((line + System.lineSeparator()).getBytes());
+                }
+                fos.close();
+            } catch (IOException e) {
+                System.err.println("history: error writing history file");
+            }
+        }
         else {
              try {
                 int n = Integer.parseInt(command[1]);
