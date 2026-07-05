@@ -11,6 +11,7 @@ public class Main {
     public static HashSet<String> availableCommands = new HashSet<>();
     public static Path dirOG = Paths.get("").toAbsolutePath();
     public static String redirectTarget = null;
+    public static String redirectError = null;
 
 
 
@@ -63,11 +64,15 @@ public class Main {
                 response.add(echoReturn.toString());
             }
             String[] command = response.toArray(new String[0]);
-            command = redirectOutput(command);
+            command = redirectOutput(command, input);
             PrintStream fileOut = null;
             if (redirectTarget != null) {
                 fileOut = new PrintStream(new File(redirectTarget));
                 System.setOut(fileOut);
+            }
+            else if (redirectError != null) {
+                fileOut = new PrintStream(new File(redirectError));
+                System.setErr(fileOut);
             }
             executeCMD(command, input);
             System.setOut(console);
@@ -77,7 +82,7 @@ public class Main {
             redirectTarget = null;
         }
     }
-    
+
 
 
     public static int executeCMD(String[] command, String input) throws IOException, InterruptedException {
@@ -128,7 +133,7 @@ public class Main {
             }
             else if (arguments[arguments.length-2].equals("2>")) {
                 if (getError(arguments, input)) {
-                    redirectError = arguments[arguments.length-1];
+                    redirectTarget = arguments[arguments.length-1];
                     arguments = Arrays.copyOfRange(arguments, 0, arguments.length - 2);
                 }
                 
