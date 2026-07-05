@@ -113,7 +113,12 @@ public class Main {
             }
             
         }
+        if (systemHISTFILE != null) {
+            writeHistory(systemHISTFILE);
+        }
+        
         terminal.close();
+        
     }
 
 
@@ -283,12 +288,7 @@ public class Main {
             readHistory(command[2]);
         }
         else if (command.length > 1 && command[1].equals("-w")) {
-            try {
-                Files.write(Paths.get(command[2]), historyList);
-                countSinceLastWrite = 0;
-            } catch (IOException e) {
-                System.err.println("history: error writing history file");
-            }
+            writeHistory(command[2]);
         }
         else if (command.length > 1 && command[1].equals("-a")) {
             try {
@@ -329,6 +329,16 @@ public class Main {
                         historyList.add(line);
                     }
                 }
+            } catch (IOException e) {
+                return;
+            }
+    }
+
+
+    public static void writeHistory(String filename) {
+        try {
+                Files.write(Paths.get(filename), historyList);
+                countSinceLastWrite = 0;
             } catch (IOException e) {
                 return;
             }
