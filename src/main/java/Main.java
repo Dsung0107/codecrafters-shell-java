@@ -14,11 +14,11 @@ public class Main {
     public static String redirectError = null;
 
 
-
     public static void main(String[] args) throws Exception {
         availableCommands.addAll(List.of(new String[]{"echo", "type", "exit", "pwd", "cd"}));
         Scanner in = new Scanner(System.in);
         PrintStream console = System.out;
+        PrintStream error = System.err;
         while (true) {
             System.out.print("$ ");
             String input = in.nextLine();
@@ -64,18 +64,15 @@ public class Main {
                 response.add(echoReturn.toString());
             }
             String[] command = response.toArray(new String[0]);
-            command = redirectOutput(command, input);
+            command = redirectOutput(command);
             PrintStream fileOut = null;
             if (redirectTarget != null) {
                 fileOut = new PrintStream(new File(redirectTarget));
                 System.setOut(fileOut);
             }
-            else if (redirectError != null) {
-                fileOut = new PrintStream(new File(redirectError));
-                System.setErr(fileOut);
-            }
             executeCMD(command, input);
             System.setOut(console);
+            System.setErr(error);
             if (fileOut != null) {
                 fileOut.close();            
             }
@@ -86,58 +83,42 @@ public class Main {
 
 
 
-    public static int executeCMD(String[] command, String input) throws IOException, InterruptedException {
+    public static void executeCMD(String[] command, String input) throws IOException, InterruptedException {
         if ((command[0].equals("echo")) && (command.length > 1)) {
             for (int i = 1; i < command.length; i++) {
                 System.out.print(command[i] + " ");
             }
             System.out.printf("\n");
-            return 0;
         }
         else if ((command[0].equals("type")) && (command.length > 1)) {
-            return getType(command);
-            
+            getType(command);
         }
         else if (command[0].equals("pwd")) {
             System.out.println(dirOG);
-            return 0;
         }
         else if ((command[0].equals("cd")) && (command.length > 1)) {
-            return changeDirectory(command);
+            changeDirectory(command);
         }
         else if (findPATH(command) == true) {
             executeCommand(command);
-            return 0;
         }
         else {
-            System.out.println(input + ": command not found");
-            return -1;
-        }
-        return 0;
-    }
-
-    public static boolean getError(String[] command, String input) throws IOException, InterruptedException {
-        if (executeCMD(command, input) == -1) {
-            return true;
-        }
-        else {
-            return false;
+            System.err.println(input + ": command not found");
         }
     }
 
-    public static String[] redirectOutput(String[] arguments, String input) throws FileNotFoundException {
+
+
+    public static String[] redirectOutput(String[] arguments) throws FileNotFoundException {
         if (arguments.length > 2) {
             if (arguments[arguments.length-2].equals(">") ||
                     arguments[arguments.length-2].equals("1>")) {
                 redirectTarget = arguments[arguments.length-1];
                 arguments = Arrays.copyOfRange(arguments, 0, arguments.length - 2);
             }
-            else if (arguments[arguments.length-2].equals("2>")) {
-                if (getError(arguments, input)) {
-                    redirectError = arguments[arguments.length-1];
-                    arguments = Arrays.copyOfRange(arguments, 0, arguments.length - 2);
-                }
-                
+            else if (arguments[arguments.length-2].equals("2>")) {}
+                redirectError = arguments[arguments.length-1];
+                arguments = Arrays.copyOfRange(arguments, 0, arguments.length - 2);
             }
         }
         return arguments;
@@ -159,10 +140,9 @@ public class Main {
                     return 0;
                 }
             }
-            System.out.println(commands[1] + ": not found");
+            System.err.println(commands[1] + ": not found");
             return -1;
         }
-        return 0;
     }
 
 
@@ -209,7 +189,7 @@ public class Main {
 
 
 
-    public static int changeDirectory(String[] command) {
+    public static void changeDirectory(String[] command) {
         Path target = dirOG.resolve(command[1]).toAbsolutePath().normalize();
         if (command[1].equals("~")) {
             command[1] = System.getenv("HOME");
@@ -219,10 +199,8 @@ public class Main {
             dirOG = target;
         }
         else {
-            System.out.println("cd: " + command[1] + ": No such file or directory");
-            return -1;
+            System.err.println("cd: " + command[1] + ": No such file or directory");
         }
-        return 0;
     }
 
 
