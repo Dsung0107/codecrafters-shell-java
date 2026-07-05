@@ -4,6 +4,7 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -12,7 +13,7 @@ public class Main {
     public static Path dirOG = Paths.get("").toAbsolutePath();
     public static String redirectTarget = null;
     public static String redirectError = null;
-
+    public static boolean redirectAppend = false;
 
     public static void main(String[] args) throws Exception {
         availableCommands.addAll(List.of(new String[]{"echo", "type", "exit", "pwd", "cd"}));
@@ -69,11 +70,11 @@ public class Main {
             command = redirectOutput(command);
             PrintStream fileOut = null;
             if (redirectTarget != null) {
-                fileOut = new PrintStream(new File(redirectTarget));
+                fileOut = new PrintStream(new FileOutputStream (redirectTarget, redirectAppend));
                 System.setOut(fileOut);
             }
             else if (redirectError != null) {
-                fileOut = new PrintStream(new File(redirectError));
+                fileOut = new PrintStream(new FileOutputStream(redirectError, redirectAppend));
                 System.setErr(fileOut);
             }
             executeCMD(command, input);
@@ -84,6 +85,7 @@ public class Main {
             }
             redirectTarget = null;
             redirectError = null;
+            redirectAppend = false;
         }
     }
 
@@ -125,6 +127,12 @@ public class Main {
             else if (arguments[arguments.length-2].equals("2>")) {
                 redirectError = arguments[arguments.length-1];
                 arguments = Arrays.copyOfRange(arguments, 0, arguments.length - 2);
+            }
+            else if (arguments[arguments.length-2].equals(">>") ||
+                    arguments[arguments.length-2].equals("1>>")) {
+                redirectTarget = arguments[arguments.length-1];
+                arguments = Arrays.copyOfRange(arguments, 0, arguments.length - 2);
+                redirectAppend = true;
             }
         }
         return arguments;
