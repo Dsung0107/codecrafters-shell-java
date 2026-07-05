@@ -134,6 +134,11 @@ public class Main {
                 arguments = Arrays.copyOfRange(arguments, 0, arguments.length - 2);
                 redirectAppend = true;
             }
+            else if (arguments[arguments.length-2].equals("2>>")) {
+                redirectError = arguments[arguments.length-1];
+                arguments = Arrays.copyOfRange(arguments, 0, arguments.length - 2);
+                redirectAppend = true;
+            }
         }
         return arguments;
     }
