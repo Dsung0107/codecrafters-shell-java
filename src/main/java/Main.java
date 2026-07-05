@@ -69,7 +69,7 @@ public class Main {
             }
             String[] command = response.toArray(new String[0]);
             command = redirectOutput(command);
-            history.add(command[0]);
+            history.add(input);
             PrintStream fileOut = null;
             if (redirectTarget != null) {
                 fileOut = new PrintStream(new FileOutputStream (redirectTarget, redirectAppend));
@@ -113,6 +113,7 @@ public class Main {
             executeCommand(command);
         }
         else if (command[0].equals("history")) {
+            history.add(command[0]);
             for (int i = 0; i < history.size(); i++) {
                 System.out.printf(" %5d  %s%n", i + 1, history.get(i));
             }   
