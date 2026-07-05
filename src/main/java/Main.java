@@ -14,9 +14,10 @@ public class Main {
     public static String redirectTarget = null;
     public static String redirectError = null;
     public static boolean redirectAppend = false;
+    public static ArrayList<String> history = new ArrayList<>();
 
     public static void main(String[] args) throws Exception {
-        availableCommands.addAll(List.of(new String[]{"echo", "type", "exit", "pwd", "cd"}));
+        availableCommands.addAll(List.of(new String[]{"echo", "type", "exit", "pwd", "cd", "history"}));
         Scanner in = new Scanner(System.in);
         PrintStream console = System.out;
         PrintStream error = System.err;
@@ -68,6 +69,7 @@ public class Main {
             }
             String[] command = response.toArray(new String[0]);
             command = redirectOutput(command);
+            history.add(command[0]);
             PrintStream fileOut = null;
             if (redirectTarget != null) {
                 fileOut = new PrintStream(new FileOutputStream (redirectTarget, redirectAppend));
@@ -109,6 +111,11 @@ public class Main {
         }
         else if (findPATH(command) == true) {
             executeCommand(command);
+        }
+        else if (command[0].equals("history")) {
+            for (int i = 0; i < history.size(); i++) {
+                System.out.printf(" %5d  %s%n", i + 1, history.get(i));
+            }   
         }
         else {
             System.err.println(input + ": command not found");
