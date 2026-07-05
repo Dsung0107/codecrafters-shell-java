@@ -133,13 +133,23 @@ public class Main {
             changeDirectory(command);
         }
         else if (command[0].equals("history")) {
-            if (command.length > 1) {
+            if (command.length > 1 && !command[1].equals("-r")) {
                 try {
                     int n = Integer.parseInt(command[1]);
                     getHistory(n);
                 }
                 catch (NumberFormatException e) {
                     System.err.println("history: " + command[1] + ": numeric argument required");
+                }
+            }
+            else if (command.length > 1 && command[1].equals("-r")) {
+                try {
+                    List<String> lines = Files.readAllLines(Paths.get(command[2]));
+                    for (String line : lines) {
+                        historyList.add(line);
+                    }
+                } catch (IOException e) {
+                    System.err.println("history: error reading history file");
                 }
             }
             else {
