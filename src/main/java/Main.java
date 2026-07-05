@@ -7,6 +7,9 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import org.jline.reader.*;
+import org.jline.terminal.*;
+import org.jline.reader.impl.history.DefaultHistory;
 
 public class Main {
     public static HashSet<String> availableCommands = new HashSet<>();
@@ -14,86 +17,105 @@ public class Main {
     public static String redirectTarget = null;
     public static String redirectError = null;
     public static boolean redirectAppend = false;
-    public static ArrayList<String> history = new ArrayList<>();
-
+    public static ArrayList<String> historyList = new ArrayList<>();
+    
     public static void main(String[] args) throws Exception {
+        Terminal terminal = TerminalBuilder.builder().system(true).build();
+        History history = new DefaultHistory();
+        LineReader reader = LineReaderBuilder.builder()
+                .terminal(terminal)
+                .history(history)
+                .build();
+
         availableCommands.addAll(List.of(new String[]{"echo", "type", "exit", "pwd", "cd", "history"}));
-        Scanner in = new Scanner(System.in);
         PrintStream console = System.out;
         PrintStream error = System.err;
+        
         while (true) {
-            System.out.print("$ ");
-            String input = in.nextLine();
-            if (input.equals("exit")) {
-                in.close();
-                break;
-                
-            }
-            ArrayList<String> response = new ArrayList<>();
-            StringBuilder echoReturn = new StringBuilder();
-            boolean inSingle = false;
-            boolean inDouble = false;
-            boolean backslashed = false;
-            for (int i = 0; i < input.length(); i++) {
-                char c = input.charAt(i);
-                if (c == '"' && !inSingle && !backslashed) {
-                    inDouble = !inDouble;
-                    continue;
+            try {
+                String input = reader.readLine("$ ");
+                if (input.equals("exit")) {
+                    break;    
                 }
-                if (c == '\'' && !inDouble && !backslashed) {
-                    inSingle = !inSingle;
-                    continue;
-                }
-                if (c == '\\' && !inSingle && !backslashed) {
-                    if (inDouble && input.charAt(i+1) != '\\' && input.charAt(i+1) != '"' ) {
-                        backslashed = false;
-                    }
-                    else {
-                        backslashed = true;
+                ArrayList<String> response = new ArrayList<>();
+                StringBuilder echoReturn = new StringBuilder();
+                boolean inSingle = false;
+                boolean inDouble = false;
+                boolean backslashed = false;
+                for (int i = 0; i < input.length(); i++) {
+                    char c = input.charAt(i);
+                    if (c == '"' && !inSingle && !backslashed) {
+                        inDouble = !inDouble;
                         continue;
                     }
-                }
-                if (c == ' ' && !inSingle && !inDouble && !backslashed) {
-                    if (echoReturn.length() > 0) {
-                        response.add(echoReturn.toString());
-                        echoReturn.setLength(0);
+                    if (c == '\'' && !inDouble && !backslashed) {
+                        inSingle = !inSingle;
+                        continue;
+                    }
+                    if (c == '\\' && !inSingle && !backslashed) {
+                        if (inDouble && input.charAt(i+1) != '\\' && input.charAt(i+1) != '"' ) {
+                            backslashed = false;
+                        }
+                        else {
+                            backslashed = true;
+                            continue;
+                        }
+                    }
+                    if (c == ' ' && !inSingle && !inDouble && !backslashed) {
+                        if (echoReturn.length() > 0) {
+                            response.add(echoReturn.toString());
+                            echoReturn.setLength(0);
+                        }
+                    }
+                    else {
+                        echoReturn.append(c);
+                        backslashed = false;
                     }
                 }
-                else {
-                    echoReturn.append(c);
-                    backslashed = false;
+                if (echoReturn.length() > 0) {
+                    response.add(echoReturn.toString());
                 }
+                String[] command = response.toArray(new String[0]);
+                command = redirectOutput(command);
+                PrintStream fileOut = null;
+                if (redirectTarget != null) {
+                    fileOut = new PrintStream(new FileOutputStream (redirectTarget, redirectAppend));
+                    System.setOut(fileOut);
+                }
+                else if (redirectError != null) {
+                    fileOut = new PrintStream(new FileOutputStream(redirectError, redirectAppend));
+                    System.setErr(fileOut);
+                }
+                executeCMD(command, input);
+                System.setOut(console);
+                System.setErr(error);
+                if (fileOut != null) {
+                    fileOut.close();            
+                }
+                redirectTarget = null;
+                redirectError = null;
+                redirectAppend = false;
+
+            
+            
+        
+            } catch (EndOfFileException e) {
+                break;
+            } catch (UserInterruptException e) {
+                continue;
             }
-            if (echoReturn.length() > 0) {
-                response.add(echoReturn.toString());
-            }
-            String[] command = response.toArray(new String[0]);
-            command = redirectOutput(command);
-            history.add(input);
-            PrintStream fileOut = null;
-            if (redirectTarget != null) {
-                fileOut = new PrintStream(new FileOutputStream (redirectTarget, redirectAppend));
-                System.setOut(fileOut);
-            }
-            else if (redirectError != null) {
-                fileOut = new PrintStream(new FileOutputStream(redirectError, redirectAppend));
-                System.setErr(fileOut);
-            }
-            executeCMD(command, input);
-            System.setOut(console);
-            System.setErr(error);
-            if (fileOut != null) {
-                fileOut.close();            
-            }
-            redirectTarget = null;
-            redirectError = null;
-            redirectAppend = false;
+            
         }
+        terminal.close();
     }
 
 
 
     public static void executeCMD(String[] command, String input) throws IOException, InterruptedException {
+        if (command.length == 0) {
+            return;
+        }
+        historyList.add(input);
         if ((command[0].equals("echo")) && (command.length > 1)) {
             for (int i = 1; i < command.length; i++) {
                 System.out.print(command[i] + " ");
@@ -109,9 +131,6 @@ public class Main {
         else if ((command[0].equals("cd")) && (command.length > 1)) {
             changeDirectory(command);
         }
-        else if (findPATH(command) == true) {
-            executeCommand(command);
-        }
         else if (command[0].equals("history")) {
             if (command.length > 1) {
                 try {
@@ -123,8 +142,11 @@ public class Main {
                 }
             }
             else {
-                getHistory(history.size());
+                getHistory(historyList.size());
             }
+        }
+        else if (findPATH(command) == true) {
+            executeCommand(command);
         }
         else {
             System.err.println(input + ": command not found");
@@ -255,9 +277,9 @@ public class Main {
     }
 
     public static void getHistory(int n) {
-        int start = Math.max(0, history.size() - n);
-        for (int i = start; i < history.size(); i++) {
-            System.out.printf(" %5d  %s%n", i + 1, history.get(i));
+        int start = Math.max(0, historyList.size() - n);
+        for (int i = start; i < historyList.size(); i++) {
+            System.out.printf(" %5d  %s%n", i + 1, historyList.get(i));
         }
     }
 
