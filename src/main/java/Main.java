@@ -115,7 +115,7 @@ public class Main {
             
         }
         if (systemHISTFILE != null) {
-            writeHistory(systemHISTFILE);
+            appendHistory(systemHISTFILE);
         }
         
         terminal.close();
@@ -292,18 +292,7 @@ public class Main {
             writeHistory(command[2]);
         }
         else if (command.length > 1 && command[1].equals("-a")) {
-            try {
-                File file = new File(command[2]);
-                FileOutputStream fos = new FileOutputStream(file, true);
-                int start = historyList.size() - countSinceLastWrite;
-                for (int i = start; i < historyList.size(); i++) {
-                    fos.write((historyList.get(i) + System.lineSeparator()).getBytes());
-                }
-                fos.close();
-                countSinceLastWrite = 0;
-            } catch (IOException e) {
-                System.err.println("history: error writing history file");
-            }
+            appendHistory(command[2]);
         }
         else {
              try {
@@ -345,7 +334,20 @@ public class Main {
             }
     }
 
-    
+    public static void appendHistory(String filename) {
+        try {
+                File file = new File(filename);
+                FileOutputStream fos = new FileOutputStream(file, true);
+                int start = historyList.size() - countSinceLastWrite;
+                for (int i = start; i < historyList.size(); i++) {
+                    fos.write((historyList.get(i) + System.lineSeparator()).getBytes());
+                }
+                fos.close();
+                countSinceLastWrite = 0;
+            } catch (IOException e) {
+                System.err.println("history: error writing history file");
+            }
+    }
 
 
 }
