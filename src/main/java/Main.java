@@ -80,6 +80,7 @@ public class Main {
                 fileOut.close();            
             }
             redirectTarget = null;
+            redirectError = null;
         }
     }
 
@@ -133,7 +134,7 @@ public class Main {
             }
             else if (arguments[arguments.length-2].equals("2>")) {
                 if (getError(arguments, input)) {
-                    redirectTarget = arguments[arguments.length-1];
+                    redirectError = arguments[arguments.length-1];
                     arguments = Arrays.copyOfRange(arguments, 0, arguments.length - 2);
                 }
                 
