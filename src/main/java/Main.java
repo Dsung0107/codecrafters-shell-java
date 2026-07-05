@@ -113,9 +113,18 @@ public class Main {
             executeCommand(command);
         }
         else if (command[0].equals("history")) {
-            for (int i = 0; i < history.size(); i++) {
-                System.out.printf(" %5d  %s%n", i + 1, history.get(i));
-            }   
+            if (command.length > 1) {
+                try {
+                    int n = Integer.parseInt(command[1]);
+                    getHistory(n);
+                }
+                catch (NumberFormatException e) {
+                    System.err.println("history: " + command[1] + ": numeric argument required");
+                }
+            }
+            else {
+                getHistory(history.size());
+            }
         }
         else {
             System.err.println(input + ": command not found");
@@ -245,6 +254,14 @@ public class Main {
         }
     }
 
+    public static void getHistory(int n) {
+        int start = Math.max(0, history.size() - n);
+        for (int i = start; i < history.size(); i++) {
+            System.out.printf(" %5d  %s%n", i + 1, history.get(i));
+        }
+    }
+
+    
 
 
 }
