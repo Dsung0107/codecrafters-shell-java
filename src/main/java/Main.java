@@ -70,6 +70,10 @@ public class Main {
                 fileOut = new PrintStream(new File(redirectTarget));
                 System.setOut(fileOut);
             }
+            else if (redirectError != null) {
+                fileOut = new PrintStream(new File(redirectError));
+                System.setErr(fileOut);
+            }
             executeCMD(command, input);
             System.setOut(console);
             System.setErr(error);
@@ -116,7 +120,7 @@ public class Main {
                 redirectTarget = arguments[arguments.length-1];
                 arguments = Arrays.copyOfRange(arguments, 0, arguments.length - 2);
             }
-            else if (arguments[arguments.length-2].equals("2>")) {}
+            else if (arguments[arguments.length-2].equals("2>")) {
                 redirectError = arguments[arguments.length-1];
                 arguments = Arrays.copyOfRange(arguments, 0, arguments.length - 2);
             }
@@ -128,6 +132,7 @@ public class Main {
     public static int getType(String[] commands) {
         if (availableCommands.contains(commands[1])) {
             System.out.println(commands[1] + " is a shell builtin");
+            return 0;
         }
         else {
             String systemPATH = System.getenv("PATH");
@@ -176,7 +181,13 @@ public class Main {
                     pb.redirectOutput(new File(redirectTarget));
                     pb.redirectError(ProcessBuilder.Redirect.INHERIT);
                     pb.redirectInput(ProcessBuilder.Redirect.INHERIT);
-                } else {
+                }
+                else if (redirectError != null) {
+                    pb.redirectError(new File(redirectError));
+                    pb.redirectOutput(ProcessBuilder.Redirect.INHERIT);
+                    pb.redirectInput(ProcessBuilder.Redirect.INHERIT);
+                } 
+                else {
                     pb.inheritIO();
                 }
                 Process proc = pb.start();
