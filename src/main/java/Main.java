@@ -32,6 +32,11 @@ public class Main {
         availableCommands.addAll(List.of(new String[]{"echo", "type", "exit", "pwd", "cd", "history"}));
         PrintStream console = System.out;
         PrintStream error = System.err;
+
+        String systemHISTFILE = System.getenv("HISTFILE");
+        if (systemHISTFILE != null) {
+            readHistory(systemHISTFILE);
+        }
         
         while (true) {
             try {
@@ -275,16 +280,7 @@ public class Main {
             }
         }
         else if (command.length > 1 && command[1].equals("-r")) {
-            try {
-                List<String> lines = Files.readAllLines(Paths.get(command[2]));
-                for (String line : lines) {
-                    if (!line.trim().isBlank()) {
-                        historyList.add(line);
-                    }
-                }
-            } catch (IOException e) {
-                System.err.println("history: error reading history file");
-            }
+            readHistory(command[2]);
         }
         else if (command.length > 1 && command[1].equals("-w")) {
             try {
@@ -321,6 +317,21 @@ public class Main {
             }
         }
         
+    }
+
+
+
+    public static void readHistory(String filename) {
+        try {
+                List<String> lines = Files.readAllLines(Paths.get(filename));
+                for (String line : lines) {
+                    if (!line.trim().isBlank()) {
+                        historyList.add(line);
+                    }
+                }
+            } catch (IOException e) {
+                return;
+            }
     }
 
     
